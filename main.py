@@ -29,8 +29,3 @@ async def process_prompt(prompt_input: PromptRoadmap):
     prompt = prompt_input.prompt
     # Do something with the prompt
     return {"prompt": prompt}
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
-
