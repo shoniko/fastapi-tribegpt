@@ -1,7 +1,7 @@
 from typing import Union
 from starlette.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
-from helpers import FormData, PromptRoadmap
+from models import FormData, PromptRoadmap
 
 
 app = FastAPI()

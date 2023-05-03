@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Form
-from pydantic import BaseModel, validator, constr, EmailUrl, constr
+from pydantic import BaseModel, validator, constr
 
 app = FastAPI()
 
