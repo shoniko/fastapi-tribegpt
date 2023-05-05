@@ -20,10 +20,12 @@ app.add_middleware(
 def read_root():
     return {"Hello": "World"}
 
-@app.post("/submit-form/")
+@app.post("/initialize_form/")
 async def submit_form(form_data: FormData):
+    
     return form_data.dict()
 
+# Endpoint to generate a roadmap given an idea
 @app.post("/process-prompt/")
 async def process_prompt(prompt_input: PromptRoadmap):
     prompt = prompt_input.prompt
