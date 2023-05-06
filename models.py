@@ -12,7 +12,8 @@ class FormData(BaseModel):
     @validator('url')
     def validate_url(cls, url):
         if url is not None and not url.startswith(('http://', 'https://')):
-            raise ValueError('URL must start with http:// or https://')
+            url = 'https://' + url
+        #     raise ValueError('URL must start with http:// or https://')
         return url
 
     @validator('email')
