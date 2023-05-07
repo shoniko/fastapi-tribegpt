@@ -17,7 +17,7 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"Hello": "I'm TribeGPT"}
 
 @app.post("/initialize_form/")
 async def submit_form(form_data: FormData):
