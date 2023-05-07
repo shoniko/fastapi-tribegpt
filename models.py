@@ -24,4 +24,4 @@ class FormData(BaseModel):
 
 
 class PromptRoadmap(BaseModel):
-    prompt: str
+    idea_prompt: str
