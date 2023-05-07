@@ -2,7 +2,12 @@
 import openai
 from llama_index import  download_loader
 from urllib.parse import urlparse
+from dotenv import load_dotenv
+import os 
 
+load_dotenv()
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def _chat_openai(prompt, system_text="",token_limit=2048):
     chat_query = [{"role":"system", "content": system_text}, {"role":"user", "content": prompt}]
@@ -19,7 +24,7 @@ def _chat_openai(prompt, system_text="",token_limit=2048):
             stop=' ;'
             )    
     output = response["choices"][0]["message"]["content"]
-
+    return output
 
 def _scrape_website(web_url:str):
     """
@@ -65,13 +70,22 @@ def _scrape_website(web_url:str):
     return web_summary
 
 
-def generate_roadmap():
+def generate_roadmap(idea:str):
+    """
+    Generate a roadmap for the idea selected by the user
+
+    Args:
+        idea (str): Idea selected by the user
+
+    Returns:
+        roadmap(str) : Roadmap for the idea
+    """
     prompt = '''
     
     '''
     system_prompt = ''
 
-    roadmap = chat_openai(prompt, system_prompt)
+    roadmap = _chat_openai(prompt, system_prompt)
     return roadmap
 
 def generate_ideas(company_link:str):
@@ -89,12 +103,22 @@ def generate_ideas(company_link:str):
     Imagine you are a product manager, and developer who has 10+ years experience in different areas of machine learning and artificial intelligence.
     You understand how a company can benefit from the recent onset of generative ai, and you can help them with identifying the parts where they will actually derive benefit from the generative AI.
     Generate three ideas how the company might benefit from generative ai after understanding the company needs from the following company description. 
-    Split the ideas by newline.
+    Split the ideas by newline. 
     {company_description}
     Ideas:
     '''
+
+    current_prompt = '''
+    Given a summary of a business in any industry, provide exactly three numbered suggestions on how generative AI could be used to improve various aspects of its operations, tailored specifically for that business. 
+    The AI improvement suggestions should be suitable for a professional audience, such as executives or those reporting to executives.
+    Do not include an introduction or conclusion.
+    Return information in JSON format
+    Here is the provide summary of a specific business, which could be in any industry, for you to analyze and suggest AI improvements:
+    {summary}
+    '''
     system_prompt = 'You are a really helpful product manager that understand company needs, and specialize in generative AI, so you can act as a good guide.'
     ideas = _chat_openai(prompt, system_prompt, 4048 - (len(prompt) + len(system_prompt)))
-    ideas = ideas.split('\n')
+
+    # ideas = ideas.split('\n')
     return ideas
 
