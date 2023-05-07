@@ -8,6 +8,8 @@ import os
 load_dotenv()
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
+BeautifulSoupWebReader = download_loader("BeautifulSoupWebReader")
+bsl_loader = BeautifulSoupWebReader()
 
 def _chat_openai(prompt, system_text="",token_limit=2048):
     chat_query = [{"role":"system", "content": system_text}, {"role":"user", "content": prompt}]
@@ -37,10 +39,9 @@ def _scrape_website(web_url:str):
         str: Company description/summary
     """
 
-    BeautifulSoupWebReader = download_loader("BeautifulSoupWebReader")
-
-    loader = BeautifulSoupWebReader()
-    documents = loader.load_data(urls=[web_url])
+    # BeautifulSoupWebReader = download_loader("BeautifulSoupWebReader")
+    
+    documents = bsl_loader.load_data(urls=[web_url])
     text_description = documents[0].text
 
     summarize_prompt = f'''
