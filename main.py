@@ -39,7 +39,7 @@ async def submit_form(form_data: FormData):
 
 # Endpoint to generate a roadmap given an idea
 @app.post("/generate_roadmap/")
-async def generate_roadmap(body: PromptRoadmap):
+async def gen_roadmap(body: PromptRoadmap):
     """
     Generate a roadmap for the (one) idea selected by the user
 
