@@ -17,8 +17,9 @@ def _chat_openai(prompt, system_text="",token_limit=2048):
             frequency_penalty=0,
             presence_penalty=0,
             stop=' ;'
-            )    
+            )
     output = response["choices"][0]["message"]["content"]
+    return output
 
 
 def _scrape_website(web_url:str):
@@ -37,6 +38,8 @@ def _scrape_website(web_url:str):
     loader = BeautifulSoupWebReader()
     documents = loader.load_data(urls=[web_url])
     text_description = documents[0].text
+
+    print(text_description)
 
     summarize_prompt = f'''
     Summarize the company details from the given website context. Tell us more about the company itself.
@@ -62,6 +65,8 @@ def _scrape_website(web_url:str):
     web_summary = web_summary["choices"][0]["message"]["content"]
     web_summary = str(web_summary)
 
+    print("-------------------")
+    print(web_summary)
     return web_summary
 
 
@@ -71,7 +76,7 @@ def generate_roadmap():
     '''
     system_prompt = ''
 
-    roadmap = chat_openai(prompt, system_prompt)
+    roadmap = _chat_openai(prompt, system_prompt)
     return roadmap
 
 def generate_ideas(company_link:str):
@@ -89,12 +94,11 @@ def generate_ideas(company_link:str):
     Imagine you are a product manager, and developer who has 10+ years experience in different areas of machine learning and artificial intelligence.
     You understand how a company can benefit from the recent onset of generative ai, and you can help them with identifying the parts where they will actually derive benefit from the generative AI.
     Generate three ideas how the company might benefit from generative ai after understanding the company needs from the following company description. 
-    Split the ideas by newline.
+    Please respond with the 3 ideas in JSON format like this: {"idea_1_title": "IDEA 1 DESCRIPTION", "idea_2_title": "IDEA 2 DESCRIPTION", "idea_3_title": "IDEA 3 DESCRIPTION"}.
     {company_description}
     Ideas:
     '''
     system_prompt = 'You are a really helpful product manager that understand company needs, and specialize in generative AI, so you can act as a good guide.'
     ideas = _chat_openai(prompt, system_prompt, 4048 - (len(prompt) + len(system_prompt)))
-    ideas = ideas.split('\n')
     return ideas
 
