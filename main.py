@@ -1,6 +1,7 @@
+import json
 from typing import Union
 from starlette.middleware.cors import CORSMiddleware
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from models import FormData, PromptRoadmap
 from helpers import generate_ideas, generate_roadmap
 
@@ -20,7 +21,7 @@ def read_root():
     return {"Hello": "I'm TribeGPT"}
 
 @app.post("/initialize_form/")
-async def submit_form(form_data: FormData):
+async def submit_form(form_data: FormData = Depends(FormData.as_form)):
     """
     Generate ideas for the user based on the form data
 
@@ -31,10 +32,11 @@ async def submit_form(form_data: FormData):
         ideas (dict): ideas generated for the user
     """
     try:
-        link, email, name, role  = form_data.url, form_data.email, form_data.name, form_data.role
+        link, email, name, company_role  = form_data.url, form_data.email, form_data.name, form_data.company_role
         ideas = generate_ideas(link)
-        return {"ideas": ideas}
+        return json.loads(ideas)
     except Exception as e:
+        print (e)
         return {"error": str(e)}
 
 # Endpoint to generate a roadmap given an idea

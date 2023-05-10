@@ -35,7 +35,7 @@ def _chat_openai(prompt, system_text="",token_limit=2048):
             frequency_penalty=0,
             presence_penalty=0,
             stop=' ;'
-            )    
+            )
     output = response["choices"][0]["message"]["content"]
     return output
 
@@ -54,6 +54,8 @@ def _scrape_website(web_url:str):
     
     documents = bsl_loader.load_data(urls=[web_url])
     text_description = documents[0].text
+
+    print(text_description)
 
     summarize_prompt = f'''
     Summarize the company details from the given website context. Tell us more about the company itself.
@@ -79,6 +81,8 @@ def _scrape_website(web_url:str):
     web_summary = web_summary["choices"][0]["message"]["content"]
     web_summary = str(web_summary)
 
+    print("-------------------")
+    print(web_summary)
     return web_summary
 
 
@@ -141,25 +145,15 @@ def generate_ideas(company_link:str):
     company_description = _scrape_website(company_link)
 
     old_prompt = '''
-    Imagine you are a product manager, and developer who has 10+ years experience in different areas of machine learning and artificial intelligence.
-    You understand how a company can benefit from the recent onset of generative ai, and you can help them with identifying the parts where they will actually derive benefit from the generative AI.
-    Generate three ideas how the company might benefit from generative ai after understanding the company needs from the following company description. 
-    Split the ideas by newline. 
-    {company_description}
-    Ideas:
-    '''
-
-    current_prompt  = '''
     Given a summary of a business in any industry, provide exactly three suggestions on how  AI could be used to improve various aspects of its operations, tailored specifically for that business. 
     The AI improvement suggestions should be suitable for a professional audience, such as executives or those reporting to executives.
     Do not include an introduction or conclusion.
-    Split the ideas by newline. 
+    Please respond with the 3 ideas in JSON format like this: {"idea_1_title": "IDEA 1 DESCRIPTION", "idea_2_title": "IDEA 2 DESCRIPTION", "idea_3_title": "IDEA 3 DESCRIPTION"}.
     Here is the provide summary of a specific business, which could be in any industry, for you to analyze and suggest AI improvements:
     {company_description}
     '''
-    system_prompt = 'You are a really helpful product manager that understand company needs, and specialize in AI, so you can act as a good guide.'
-    ideas = _chat_openai(current_prompt, system_prompt, 4048 - (len(current_prompt) + len(system_prompt)))
-    ideas = ideas.split('\n')
-    ideas = [i for i in ideas if i != '']
+    system_prompt = 'You are a really helpful product manager that understand company needs, and specialize in generative AI, so you can act as a good guide.'
+    ideas = _chat_openai(prompt, system_prompt, 4048 - (len(prompt) + len(system_prompt)))
+
     return ideas
 
