@@ -2,8 +2,8 @@ import json
 from typing import Union
 from starlette.middleware.cors import CORSMiddleware
 from fastapi import Depends, FastAPI
-from models import FormData, PromptRoadmap
-from helpers import generate_ideas, generate_roadmap
+from models import PromptRoadmap, WebsiteDataPrompt, IdeasPrompt, SummaryPrompt
+from helpers import generate_ideas, generate_roadmap, scrape_website, summarize_description
 
 
 app = FastAPI()
@@ -20,8 +20,8 @@ app.add_middleware(
 def read_root():
     return {"Hello": "I'm TribeGPT"}
 
-@app.post("/initialize_form/")
-async def submit_form(form_data: FormData = Depends(FormData.as_form)):
+@app.post("/get_ideas/")
+async def submit_form(body:IdeasPrompt):
     """
     Generate ideas for the user based on the form data
 
@@ -32,8 +32,7 @@ async def submit_form(form_data: FormData = Depends(FormData.as_form)):
         ideas (dict): ideas generated for the user
     """
     try:
-        link, email, name, company_role  = form_data.url, form_data.email, form_data.name, form_data.company_role
-        ideas = generate_ideas(link)
+        ideas = generate_ideas(summary=body.summary, role=body.role)
         return json.loads(ideas)
     except Exception as e:
         print (e)
@@ -58,3 +57,32 @@ async def gen_roadmap(body: PromptRoadmap):
     
     except Exception as e:
         return {"error": str(e)}
+
+# Endpoint to retrieve text describing the website
+@app.post("/website_data/")
+async def gen_website_data(body: WebsiteDataPrompt):
+    """
+    """
+    try:
+        website__data = scrape_website(body.url)
+        return website__data
+    
+    except Exception as e:
+        return {"error": str(e)}
+
+# Endpoint to retrieve text describing the website
+@app.post("/summarize/")
+async def gen_summary(body: SummaryPrompt):
+    """
+    """
+    try:
+        website__data = summarize_description(body.description)
+        return website__data
+    
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@app.get("/ping")
+async def gen_ping():
+    return {"status": "ok"}

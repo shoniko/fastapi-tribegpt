@@ -36,3 +36,20 @@ class FormData(BaseModel):
 
 class PromptRoadmap(BaseModel):
     idea_prompt: str
+
+class WebsiteDataPrompt(BaseModel):
+    url: str
+    @validator('url')
+    def validate_url(cls, url):
+        print(url)
+        if url is not None and not url.startswith(('http://', 'https://')):
+            url = 'https://' + url
+        #     raise ValueError('URL must start with http:// or https://')
+        return url
+
+class IdeasPrompt(BaseModel):
+    summary: str
+    role: str
+
+class SummaryPrompt(BaseModel):
+    description: str
