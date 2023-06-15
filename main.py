@@ -2,8 +2,8 @@ import json
 from typing import Union
 from starlette.middleware.cors import CORSMiddleware
 from fastapi import Depends, FastAPI
-from models import PromptRoadmap, WebsiteDataPrompt, IdeasPrompt, SummaryPrompt
-from helpers import generate_ideas, generate_roadmap, scrape_website, summarize_description
+from models import WebsiteDataPrompt, IdeasPrompt
+from helpers import scrape_website, get_ideas
 
 
 app = FastAPI()
@@ -20,44 +20,6 @@ app.add_middleware(
 def read_root():
     return {"Hello": "I'm TribeGPT"}
 
-@app.post("/get_ideas/")
-async def submit_form(body:IdeasPrompt):
-    """
-    Generate ideas for the user based on the form data
-
-    Args:
-        form_data (FormData): takes in the form data from the frontend
-
-    Returns:
-        ideas (dict): ideas generated for the user
-    """
-    try:
-        ideas = generate_ideas(summary=body.summary, role=body.role)
-        return json.loads(ideas)
-    except Exception as e:
-        print (e)
-        return {"error": str(e)}
-
-# Endpoint to generate a roadmap given an idea
-@app.post("/generate_roadmap/")
-async def gen_roadmap(body: PromptRoadmap):
-    """
-    Generate a roadmap for the (one) idea selected by the user
-
-    Args:
-        body (PromptRoadmap): takes in the idea selected by the user
-
-    Returns:
-        roadmap (dict): roadmap for the idea
-    """
-    try:
-        selected_idea = body.idea_prompt
-        roadmap = generate_roadmap(selected_idea)
-        return {"roadmap": roadmap}
-    
-    except Exception as e:
-        return {"error": str(e)}
-
 # Endpoint to retrieve text describing the website
 @app.post("/website_data/")
 async def gen_website_data(body: WebsiteDataPrompt):
@@ -71,13 +33,14 @@ async def gen_website_data(body: WebsiteDataPrompt):
         return {"error": str(e)}
 
 # Endpoint to retrieve text describing the website
-@app.post("/summarize/")
-async def gen_summary(body: SummaryPrompt):
+@app.post("/get_ideas/")
+async def gen_summary(body: IdeasPrompt):
     """
     """
     try:
-        website__data = summarize_description(body.description)
-        return website__data
+        print("Calling summarize")
+        ideas = get_ideas(body.description, body.role)
+        return json.loads(ideas)
     
     except Exception as e:
         return {"error": str(e)}

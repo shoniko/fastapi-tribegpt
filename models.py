@@ -48,8 +48,5 @@ class WebsiteDataPrompt(BaseModel):
         return url
 
 class IdeasPrompt(BaseModel):
-    summary: str
-    role: str
-
-class SummaryPrompt(BaseModel):
     description: str
+    role: str
